@@ -1,0 +1,60 @@
+<h1 id="osc-stuff">OSC Stuff</h1>
+<p>Open Sound Control (OSC) is what we use to communicate to the Pi's over the network. There are numerous files/classes associated with the workings of the OSC server on the Pi, which will be described here.</p>
+<p>One important thing to make sure of is that you have the folder <em>wosclib-1.0</em> either in same directory as your project or in the include path. WOscLib can be downloaded/installed from <a href="http://sourceforge.net/projects/wosclib/">here</a>. The directory may need to be renamed to <em>wosclib-1.0</em>. I have no real idea how these files work but it's important to have them.</p>
+<p>The relevant Osc files for this project are:</p>
+<ul>
+<li>OSCServerMethod.h/.cpp</li>
+<li>OscListener.h/.cpp</li>
+<li>OscLaunchMethod.h/.cpp</li>
+<li>OscModifyMethod.h/.cpp</li>
+<li>OscQuitMethod.h/.cpp</li>
+<li>OscExitMethod.h/.cpp</li>
+<li>OscCreateVboMethod.h/.cpp</li>
+</ul>
+<p>The only important thing I have to say about OscServerMethod is that all Osc*Methods are subclasses of OscServerMethod.</p>
+<h2 id="osclistener">OscListener</h2>
+<p>The OscListener is pretty much your OSC Server. It listens for and handles messages received on the Pi. </p>
+<h3 id="osclistenerinitialize-stdmapwzxhzdk6">OscListener::Initialize(..., std::map<std::string, Sprite> *)</h3>
+<p>This function is called to initialize the server. Hand it a pointer to the sprite map (the same given to SpriteView).</p>
+<p>Currently it initializes the five available methods (Exit, Quit, Launch, Modify, CreateVbo) and hands them the sprite map pointer as well. If any new methods are created, this is the appropriate place to initialize them.</p>
+<h2 id="methodmethod">*Method::Method(...)</h2>
+<p>Each Method subclass must override three functions. These functions are:</p>
+<ul>
+<li>Method(const WOscMessage *msg, const WOscTimeTag&amp; when, const NetReturnAddress *ra)</li>
+<li>Method(const WOscMessage&amp; msg, const WOscTimeTag&amp; when, const WOscNetReturn&amp; ra)</li>
+<li>Method(const WOscMessage *msg, const WOscTimeTag&amp; when, const WOscNetReturn *ra)</li>
+</ul>
+<p>One of these functions is called when the server is sent a message. The class whose Method function gets called depends on the address given in the message (eg. <code>"address: "/1/launch"</code> would make the server call LaunchMethod::Method). Not really sure when <em>these</em> different functions are called exactly and if this is the correct way of doing things, but I've been making each function within an individual *Method class do the same thing - only changing the syntax to take into account whether a parameter is a reference or whatever.</p>
+<p>The WOscMessage parameter is the most important thing for us. This parameter contains the yaml string sent to us from a remote client. To get this into a string, we can simply do:</p>
+<pre><code>std::string messageString = msg-&gt;GetString(0).GetBuffer();
+</code></pre>
+
+<h2 id="osclaunchmethod">OscLaunchMethod</h2>
+<p>The Launch method is ideally called at launch, but right now it is used any time we want to update the sprite map.</p>
+<p>To make sure the Launch method is called when sending a message, in your yaml string set</p>
+<pre><code>address: &quot;/1/launch&quot;
+</code></pre>
+
+<h2 id="oscmodifymethod">OscModifyMethod</h2>
+<p>The Modify method is ideally called when you want to modify anything, but right now calling it would likely cause a crash. It currently utilizes an older method of updating sprites.</p>
+<p>To make sure the Modify method is called when sending a message, in your yaml string set</p>
+<pre><code>address: &quot;/1/transfer&quot;
+</code></pre>
+
+<h2 id="oscquitmethod">OscQuitMethod</h2>
+<p>The Quit Method is ideally called when you want to quit the application. Right now it deletes all the sprites in the sprite_map.</p>
+<p>To make sure the Quit method is called when sending a message, in your yaml string set</p>
+<pre><code>address: &quot;/1/quit&quot;
+</code></pre>
+
+<h2 id="oscexitmethod">OscExitMethod</h2>
+<p>The Exit method shuts down the whole program. </p>
+<p>To make sure the Exit method is called when sending a message, in your yaml string set</p>
+<pre><code>address: &quot;/1/exit&quot;
+</code></pre>
+
+<h2 id="osccreatevbomethod">OscCreateVboMethod</h2>
+<p>The Create Vbo Method is used to create vertex buffer objects. </p>
+<p>To make sure the Create Vbo method is called when sending a message, in your yaml string set</p>
+<pre><code>address: &quot;/1/createvbo&quot;
+</code></pre>

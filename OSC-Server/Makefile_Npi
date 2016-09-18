@@ -1,0 +1,27 @@
+SRCDIR = ./src
+OBJDIR = ./tmp
+BINDIR = ./bin
+INCDIR = ./inc
+
+CC= g++
+EXEC := $(BINDIR)/render
+SOURCES := $(wildcard $(SRCDIR)/*.cpp)
+OBJS := $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
+INCL := -I/usr/local/include -I$(INCDIR) -I$./wosclib-1.0
+
+ifeq    ($(shell uname), Linux)
+    LIBS = -lglut -lGLEW -lGL -ljpeg -ltiff -lpng -lyaml-cpp -lwosclib
+else ifeq   ($(shell uname), Darwin)
+    LIBS= -L/usr/local/lib -lGLEW -framework GLUT -framework OpenGL -lm -ljpeg -lpng -lz -ltiff -lyaml-cpp -lwosclib -lhiredis
+else
+    LIBS=  -lglew32 -lfreeglut -lopengl32 -lwinmm -lgdi32 -lm -ljpeg -lpng -lz -ltiff
+endif
+
+$(EXEC) : $(OBJS)
+	mkdir -p $(dir $@)
+	$(CC) -o $(EXEC) $(OBJS) $(LIBS)
+
+$(OBJS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
+	mkdir -p $(dir $@)
+	$(CC) $(INCL) -DRPI -c $< -o $@
+

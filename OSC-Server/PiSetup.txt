@@ -1,0 +1,29 @@
+Instructions for Pi setup
+
+to change rotation (if needed):
+	>sudo nano /boot/config.txt
+
+	find display_rotate, change value to 3:
+	display_rotate = 3
+
+	^X
+	Y
+	M-D
+	enter
+
+	>sudo reboot
+
+installing libraries for this:
+
+	>sudo apt-get install libtiff5-dev libpng12-dev libjpeg8-dev libyaml-cpp-dev
+
+	for wosclib stuff, download from their sourceforge page and unpack
+	configure it on the pi:
+
+	>./configure
+	>make
+
+	when that's done, it generates a libwosclib.a file.
+	move this file to /usr/lib
+
+That's it!
