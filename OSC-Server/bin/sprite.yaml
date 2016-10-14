@@ -1,0 +1,58 @@
+### Grendl server application configuration file
+#
+# Default filename is "grendl-config.yaml"
+# File is formatted as a map.
+# NOTE: the OSC addresses in this file don't currently do anything in the C++ version. They are here for compatbility,
+# and forward compatibility after some reengineering.
+#
+# Keys:
+#  Commands: a sequence of commands
+#  Command keys:
+#    event: (single-quoted) string that represents the triggering
+#      event.
+#  OscListener:
+oscListener:
+  port: 7770
+  messages:
+    - address: '/grendl/launch'
+      typeString: "s" 
+      event: 'launch'
+    - address: '/1/push1' 
+      typeString: "f" 
+      event: 'transfer'
+    - address: '/grendl/quit'  # launch quit script
+      typeString: "" 
+      event: 'quit'
+    - address: '/grendl/stop'  # stop the server
+      typeString: "" 
+      event: 'stop'
+# Instructions are not currently used
+instructions:
+  - event: 'launch'
+    command: 'launch' 
+    file: 'launch.sh'
+  - event: 'transfer' 
+    command: 'transfer' 
+    file: 'transfer.sh'
+  - event: 'start'
+    command: 'start'
+    file: 'start.sh'
+players:
+  - # players are users of the system
+    name: 'Steve'
+    username: 'sdbeck'
+    hostname: 'hostname'
+    hostip: '127.0.0.1'
+    receiverport: '9000'
+  - # player
+    name: 'Chris'
+    username: 'branton'
+    hostname: 'hostname'
+    hostip: '127.0.0.1'
+    receiverport: '9000'
+  - # player
+    name: 'Jeff'
+    username: 'albert'
+    hostname: 'hostname'
+    hostip: '127.0.0.1'
+    receiverport: '9000' 
